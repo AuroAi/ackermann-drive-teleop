@@ -1,10 +1,34 @@
+<?xml version="1.0"?>
 <launch>
-  <arg name="max_speed" default="0.2"/>
-  <arg name="max_angle" default="0.7"/>
+ <arg name="max_speed" default="1.0"/>
+ <arg name="max_acceleration" default="1.5"/>
+ <arg name="max_angle" default="0.7"/>
+ <arg name="max_angle_vel" default="0.2464"/>
+ <arg name="min_angle_vel" default="0.02464"/>
+ <arg name="command_topic" default="ackermann_cmd"/>
+ <arg name="config_file" default="$(find ackermann_drive_teleop)/config/logitech_f310_ackermann.yaml"/>
+<!--
+  <arg name="config_file" default="$(find ackermann_drive_teleop)/config/logitech_extreme_3d_pro_ackermann.yaml"/>
+-->
+  <arg name="joystick_port" default="/dev/input/js0"/>
+  <arg name="xterm" default="false" />
+
+
   <!-- Launch joy_node that publishes Joy messages -->
-  <node name="joy" type="joy_node" pkg="joy"/>
+  <node name="joy" type="joy_node" pkg="joy">
+    <param name="dev" value="$(arg joystick_port)"/>
+  </node>
 
   <!-- Launch ackermann_drive_joyop to teleoperate robots with ackermann steering -->
-  <node name="ackermann_drive_joyop" type="ackermann_drive_joyop.py" pkg="ackermann_drive_teleop" output='screen' args="$(arg max_speed) $(arg max_angle)"/>
+  <rosparam command="load" file="$(arg config_file)" ns="ackermann_drive_joyop"/>
+  <param name="ackermann_drive_joyop/max_speed" value="$(arg max_speed)"/>
+  <param name="ackermann_drive_joyop/max_acceleration" value="$(arg max_acceleration)"/>
+  <param name="ackermann_drive_joyop/max_steering_angle" value="$(arg max_angle)"/>
+  <param name="ackermann_drive_joyop/cmd_topic" value="$(arg command_topic)"/>
+
+  <node name="ackermann_drive_joyop" type="joyop.py" pkg="ackermann_drive_teleop" output='screen' unless="$(arg xterm)" />
+  <node name="ackermann_drive_joyop" type="joyop.py" pkg="ackermann_drive_teleop" output='screen' launch-prefix="xterm -e" if="$(arg xterm)" />
+
+
 </launch>
 

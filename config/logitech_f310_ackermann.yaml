@@ -1,0 +1,9 @@
+speed_axis: 5
+speed_axis_centered: false
+speed_axis_invert: true
+steer_axis: 0
+steer_axis_invert: false
+steer_vel_axis: 4
+acceleration_axis: 2
+acceleration_axis_centered: false
+acceleration_axis_invert: true
